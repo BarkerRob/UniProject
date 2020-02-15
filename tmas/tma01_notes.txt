@@ -1,0 +1,12 @@
+Premier League predictive algorithm (PLePA)
+Look back on why it was a problem
+Mind map tasks?
+Picture of lifecycle
+Extend length of some tasks
+Don't delete skills/resources/risks, mark as no longer needed
+Remove FK in conceptual model, add 1 to many etc.
+Explain confident based on schedule so far in review
+Maybe break down schedule to smaller subtasks
+Remove ethical/legal/social aspects in TMA01
+Add books from this course to literature review read and books from previous studies TM356 BLOCK 1
+Screenshot other work - only going to read the main document
