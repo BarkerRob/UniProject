@@ -1,8 +1,8 @@
 CREATE TABLE stadium (
     stadium_id_pk INT AUTO_INCREMENT PRIMARY KEY,
     stadium_name VARCHAR(255) NOT NULL,
-    x_coord INT NOT NULL,
-    y_coord INT NOT NULL
+    x_coord DECIMAL(13,8) NOT NULL,
+    y_coord DECIMAL(13,8) NOT NULL
 );
 
 CREATE TABLE team (
