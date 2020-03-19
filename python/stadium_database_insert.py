@@ -63,7 +63,11 @@ def insert_stadium_data(cursor, database):
                     stadium_name = row[1].upper()
                     x_coord = float(row[3])
                     y_coord = float(row[2])
+                    team = row[0].upper()
                     sql = f'INSERT INTO stadium (stadium_name, x_coord, y_coord) VALUES ("{stadium_name}", {x_coord}, {y_coord})'
+                    cursor.execute(sql)
+                    database.commit()
+                    sql = f'INSERT INTO team (name_pk, stadium_id_fk) SELECT "{team}", stadium_id_pk FROM stadium where stadium_name = "{stadium_name}"'
                     cursor.execute(sql)
                     database.commit()
                 line_count += 1
