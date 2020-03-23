@@ -33,7 +33,6 @@ CREATE TABLE game (
 	home_team_id_pk_fk INT,
     away_team_id_pk_fk INT,
     season_pk INT,
-    matchday INT,
     home_team_score INT,
     away_team_score INT,
     PRIMARY KEY (home_team_id_pk_fk, away_team_id_pk_fk, season_pk),
