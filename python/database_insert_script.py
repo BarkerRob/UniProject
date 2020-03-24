@@ -81,7 +81,6 @@ def insert_data(data_type, data, cursor, database):
                         cursor.execute(sql)
                         database.commit()
                     elif data_type == 'game':
-                        # Todo fix bug mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'Norwich' in 'field list'
                         home_team = row[3].upper()
                         away_team = row[4].upper()
                         season = row[0]
