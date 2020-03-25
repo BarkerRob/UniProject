@@ -15,7 +15,7 @@ GAME_DATA = ['premier_league_results_2014-15',
                 'premier_league_results_2017-18',
                 'premier_league_results_2018-19',
                 'premier_league_results_2019-20']
-TABLE_DATA = ['premier_league_table_2014-15',
+SEASON_OVERVIEW_DATA = ['premier_league_table_2014-15',
               'premier_league_table_2015-16',
               'premier_league_table_2016-17',
               'premier_league_table_2017-18',
@@ -38,7 +38,7 @@ def main():
 
     insert_data('stadium_team', STADIUM_DATA, cursor, plepa_db)
     insert_data('game', GAME_DATA, cursor, plepa_db)
-    insert_data('table', TABLE_DATA, cursor, plepa_db)
+    insert_data('season_overview', SEASON_OVERVIEW_DATA, cursor, plepa_db)
 
     plepa_db.close()
 
@@ -49,10 +49,10 @@ def main():
 def insert_data(data_type, data, cursor, database):
     """
     A function to insert data into the MySQL database for PLePA.
-    Must use stadium_team, game or table for data_type.
+    Must use stadium_team, game or season_overview for data_type.
 
     Args:
-        data_type (str): The type of data to be inserted. i.e. stadium_team, game or table.
+        data_type (str): The type of data to be inserted. i.e. stadium_team, game or season_overview.
         data (list): A list of names of CSV sheets to be inserted into the database.
         cursor (cursor_type): The cursor used to query the database.
         database (my_sql connection): The connection to the database.
@@ -87,15 +87,27 @@ def insert_data(data_type, data, cursor, database):
                         home_team_score = row[5]
                         away_team_score = row[6]
                         sql = f'INSERT INTO game (home_team_id_pk_fk, away_team_id_pk_fk, season_pk, home_team_score, away_team_score) ' \
-                              f'SELECT team1.team_id_pk, team2.team_id_pk, "{season}", {home_team_score}, {away_team_score} ' \
+                              f'SELECT team1.team_id_pk, team2.team_id_pk, {season}, {home_team_score}, {away_team_score} ' \
                               f'FROM team team1, team team2 ' \
                               f'WHERE team1.name_pk = "{home_team}" ' \
                               f'AND team2.name_pk = "{away_team}"'
                         cursor.execute(sql)
                         database.commit()
-                    elif data_type == 'table':
-                        # Todo insert table data here
-                        pass
+                    elif data_type == 'season_overview':
+                        team = row[2]
+                        season = row[0]
+                        position = row[1]
+                        goals_for = row[7]
+                        goals_against = row[8]
+                        wins = row[4]
+                        draws = row[5]
+                        losses = row[6]
+                        sql = f'INSERT INTO season_overview (team_id_pk_fk, season_pk, position, goals_for, goals_against, wins, draws, losses) ' \
+                              f'SELECT team.team_id_pk, {season}, {position}, {goals_for}, {goals_against}, {wins}, {draws}, {losses} ' \
+                              f'FROM team ' \
+                              f'WHERE name_pk = "{team}" '
+                        cursor.execute(sql)
+                        database.commit()
                     else:
                         print('Invalid data type sent in!')
                         raise sys.exit

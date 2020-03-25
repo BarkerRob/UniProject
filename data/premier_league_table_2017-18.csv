@@ -1,21 +1,21 @@
-Rk,Squad,MP,W,D,L,GF,GA,GDiff,Pts,xG,xGA,xGDiff,xGDiff/90,Attendance,Top Team Scorer,Goalkeeper,Notes
-1,Manchester City,38,32,4,2,106,27,+79,100,81.7,23.7,+58.0,+1.53,54070,Sergio Agüero - 21,Ederson,→ UEFA Champions League via league finish
-2,Manchester Utd,38,25,6,7,68,28,+40,81,56.5,39.3,+17.3,+0.45,74976,Romelu Lukaku - 16,David de Gea,→ UEFA Champions League via league finish
-3,Tottenham,38,23,8,7,74,36,+38,77,67.3,33.4,+33.9,+0.89,67953,Harry Kane - 30,Hugo Lloris,→ UEFA Champions League via league finish
-4,Liverpool,38,21,12,5,84,38,+46,75,71.1,34.1,+37.0,+0.97,53049,Mohamed Salah - 32,Loris Karius Simon Mignolet,→ UEFA Champions League via league finish
-5,Chelsea,38,21,7,10,62,38,+24,70,55.4,35.0,+20.4,+0.54,41282,Eden Hazard - 12,Thibaut Courtois,→ UEFA Europa League via cup win 1
-6,Arsenal,38,19,6,13,74,51,+23,63,62.9,50.8,+12.1,+0.32,59323,Alexandre Lacazette - 14,Petr Čech,→ UEFA Europa League via league finish
-7,Burnley,38,14,12,12,36,39,-3,54,34.6,47.7,-13.1,-0.34,20688,Chris Wood - 10,Nick Pope,→ UEFA Europa League via league finish 2
-8,Everton,38,13,10,15,44,58,-14,49,39.6,50.2,-10.6,-0.28,38797,Wayne Rooney - 10,Jordan Pickford,
-9,Leicester City,38,12,11,15,56,60,-4,47,46.5,48.0,-1.4,-0.04,31583,Jamie Vardy - 20,Kasper Schmeichel,
-10,Newcastle Utd,38,12,8,18,39,47,-8,44,41.9,53.4,-11.5,-0.30,51992,Ayoze Pérez - 8,Rob Elliot,
-11,Crystal Palace,38,11,11,16,45,55,-10,44,53.7,48.3,+5.4,+0.14,25063,Luka Milivojević - 10,Wayne Hennessey,
-12,Bournemouth,38,11,11,16,45,61,-16,44,44.4,58.4,-14.0,-0.37,10641,Callum Wilson Joshua King - 8,Asmir Begović,
-13,West Ham,38,10,12,16,48,68,-20,42,37.2,57.1,-19.8,-0.52,56885,Marko Arnautović - 11,Joe Hart Adrián,
-14,Watford,38,11,8,19,44,64,-20,41,44.0,56.0,-12.0,-0.32,20231,Abdoulaye Doucouré - 7,Heurelho Gomes,
-15,Brighton,38,9,13,16,34,54,-20,40,38.0,48.8,-10.7,-0.28,30403,Glenn Murray - 12,Mathew Ryan,
-16,Huddersfield,38,9,10,19,28,58,-30,37,31.7,53.4,-21.7,-0.57,24040,Steve Mounié - 7,Jonas Lössl,
-17,Southampton,38,7,15,16,37,56,-19,36,39.8,44.5,-4.7,-0.12,30794,Charlie Austin - 7,Fraser Forster,
-18,Swansea City,38,8,9,21,28,56,-28,33,30.6,58.5,-27.9,-0.73,20623,Jordan Ayew - 7,Łukasz Fabiański,Relegated
-19,Stoke City,38,7,12,19,35,68,-33,33,37.7,60.0,-22.3,-0.59,29280,Xherdan Shaqiri - 8,Jack Butland,Relegated
-20,West Brom,38,6,13,19,31,56,-25,31,34.1,48.3,-14.2,-0.37,24520,Salomón Rondón Jay Rodriguez - 7,Ben Foster,Relegated
+Season,Rk,Squad,MP,W,D,L,GF,GA,GDiff,Pts,Attendance,Notes
+2017,1,Man City,38,32,4,2,106,27,79,100,54070,UEFA Champions League via league finish
+2017,2,Man United,38,25,6,7,68,28,40,81,74976,UEFA Champions League via league finish
+2017,3,Tottenham,38,23,8,7,74,36,38,77,67953,UEFA Champions League via league finish
+2017,4,Liverpool,38,21,12,5,84,38,46,75,53049,UEFA Champions League via league finish
+2017,5,Chelsea,38,21,7,10,62,38,24,70,41282,UEFA Europa League via cup win 1
+2017,6,Arsenal,38,19,6,13,74,51,23,63,59323,UEFA Europa League via league finish
+2017,7,Burnley,38,14,12,12,36,39,-3,54,20688,UEFA Europa League via league finish 2
+2017,8,Everton,38,13,10,15,44,58,-14,49,38797,
+2017,9,Leicester,38,12,11,15,56,60,-4,47,31583,
+2017,10,Newcastle,38,12,8,18,39,47,-8,44,51992,
+2017,11,Crystal Palace,38,11,11,16,45,55,-10,44,25063,
+2017,12,Bournemouth,38,11,11,16,45,61,-16,44,10641,
+2017,13,West Ham,38,10,12,16,48,68,-20,42,56885,
+2017,14,Watford,38,11,8,19,44,64,-20,41,20231,
+2017,15,Brighton,38,9,13,16,34,54,-20,40,30403,
+2017,16,Huddersfield,38,9,10,19,28,58,-30,37,24040,
+2017,17,Southampton,38,7,15,16,37,56,-19,36,30794,
+2017,18,Swansea,38,8,9,21,28,56,-28,33,20623,Relegated
+2017,19,Stoke,38,7,12,19,35,68,-33,33,29280,Relegated
+2017,20,West Brom,38,6,13,19,31,56,-25,31,24520,Relegated
