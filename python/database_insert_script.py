@@ -10,17 +10,17 @@ import mysql.connector
 DATA_PATH = 'E:\\Code\\Dev\\Python\\Projects\\UniProject\\data\\'
 STADIUM_DATA = ['stadium_data']
 GAME_DATA = ['premier_league_results_2014-15',
-                'premier_league_results_2015-16',
-                'premier_league_results_2016-17',
-                'premier_league_results_2017-18',
-                'premier_league_results_2018-19',
-                'premier_league_results_2019-20']
+             'premier_league_results_2015-16',
+             'premier_league_results_2016-17',
+             'premier_league_results_2017-18',
+             'premier_league_results_2018-19',
+             'premier_league_results_2019-20']
 SEASON_OVERVIEW_DATA = ['premier_league_table_2014-15',
-              'premier_league_table_2015-16',
-              'premier_league_table_2016-17',
-              'premier_league_table_2017-18',
-              'premier_league_table_2018-19',
-              'premier_league_table_2019-20']
+                        'premier_league_table_2015-16',
+                        'premier_league_table_2016-17',
+                        'premier_league_table_2017-18',
+                        'premier_league_table_2018-19',
+                        'premier_league_table_2019-20']
 
 
 # ======================================================= Main ======================================================= #
