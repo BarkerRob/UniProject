@@ -1,0 +1,24 @@
+LESPI TUTORIAL
+
+Review data protection regulations - No people involved.
+Discuss copyright.
+Talk about using data – doesn’t involve people. So no affects from GDPR 
+Look at legal, ethical, social and professional issues that may arise during development and acknowledge. 
+
+
+
+TMA02 TUTORIAL
+
+Add reset_database work to schedule
+Only add snippets of code for work done
+Must discuss LESPI - 1.8 in sample tma
+	section 1 - how it will affect
+	section 3 - what is has affected
+OU citations at block level
+Bibliography is all reading done. Include reading for TMA01
+References is for citations for the specific TMA
+Reading for this TMA in literature review
+Reflect on TMA feedback in section 3
+Evaluation criteria in project description
+New plan in main, old plan in appendix.
+Include paragraph on COVID-19 in review and reflection
