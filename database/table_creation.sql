@@ -30,12 +30,13 @@ CREATE TABLE season_overview (
 );
 
 CREATE TABLE game (
+    game_pk INT AUTO_INCREMENT,
 	home_team_id_pk_fk INT,
     away_team_id_pk_fk INT,
     season_pk INT,
     home_team_score INT,
     away_team_score INT,
-    PRIMARY KEY (home_team_id_pk_fk, away_team_id_pk_fk, season_pk),
+    PRIMARY KEY (game_pk, home_team_id_pk_fk, away_team_id_pk_fk, season_pk),
     CONSTRAINT fk_home_team_id
     FOREIGN KEY (home_team_id_pk_fk)
 		REFERENCES team(team_id_pk),

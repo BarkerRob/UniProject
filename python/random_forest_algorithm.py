@@ -34,3 +34,83 @@ Possible implementation:
             Form against opponent - returns 0.7
             Total is 1.7 which is a draw according to result criteria at the top.
 """
+# ====================================================== Imports ===================================================== #
+
+import mysql.connector
+
+# ===================================================== Variables ==================================================== #
+
+CURRENT_SEASON = 2019
+
+
+# ======================================================= Main ======================================================= #
+
+
+def main():
+    plepa_db = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        passwd='PLePApw',
+        database='plepa'
+    )
+    db_cursor = plepa_db.cursor()
+
+    # TODO need to remove the 1 passing into this function, it needs to be passed in dynamically
+    recent_form(1, db_cursor)
+    form_against_team(1, 2, db_cursor)
+
+    plepa_db.close()
+
+
+# ===================================================== Functions ==================================================== #
+
+
+def recent_form(team_id, db_cursor):
+    sql = f'SELECT * ' \
+          f'FROM plepa.game ' \
+          f'WHERE home_team_id_pk_fk = {team_id}  OR away_team_id_pk_fk = {team_id} ' \
+          f'ORDER BY game_pk DESC ' \
+          f'LIMIT 5'
+    db_cursor.execute(sql)
+    form = 0
+    for game_nr, home_team_id, away_team_id, season, home_team_score, away_team_score in db_cursor:
+        if home_team_id == team_id:
+            result = home_team_score - away_team_score
+        else:
+            result = away_team_score - home_team_score
+        if result > 0:
+            form = form + 0.2
+        elif result == 0:
+            form = form + 0.1
+    print(form)
+
+
+# ==================================================================================================================== #
+
+
+def form_against_team(team_id_one, team_id_two, db_cursor):
+    sql = f'SELECT * ' \
+          f'FROM plepa.game ' \
+          f'WHERE ((home_team_id_pk_fk = {team_id_one} AND away_team_id_pk_fk = {team_id_two}) ' \
+          f'    OR (home_team_id_pk_fk = {team_id_two} AND away_team_id_pk_fk = {team_id_one})) ' \
+          f'ORDER BY game_pk DESC ' \
+          f'LIMIT 5'
+    db_cursor.execute(sql)
+    form = 0
+    for game_nr, home_team_id, away_team_id, season, home_team_score, away_team_score in db_cursor:
+        if home_team_id == team_id_one:
+            result = home_team_score - away_team_score
+        else:
+            result = away_team_score - home_team_score
+        if result > 0:
+            form = form + 0.2
+        elif result == 0:
+            form = form + 0.666
+    print(form)
+
+
+# ==================================================================================================================== #
+
+
+if __name__ == '__main__':
+    main()
