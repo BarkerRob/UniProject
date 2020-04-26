@@ -5,18 +5,10 @@ Notes:
     1.11 - 1.89 is a draw
     1.9 - 3.0 is a win
 
-    I need to convert the win/draw/loss into a value between 0 and 1.
-    Initial thoughts are below:
-        A loss by 3+ goals
-        A loss by 1-2 goals
-        A draw is 0.5
-        A win by 1-2 goals
-        A win by 3+ goals
-
     Criteria to determine the result:
         Recent form, last 5 games
-        Distance travelled, calculated by distance between stadiums
         Form against opponent, last 5 games, if possible
+        Distance travelled, calculated by distance between stadiums
         Last years league position compared to opponents
         Current league position compared to opponents
 
@@ -37,6 +29,7 @@ Possible implementation:
 # ====================================================== Imports ===================================================== #
 
 import mysql.connector
+import math
 
 # ===================================================== Variables ==================================================== #
 
@@ -58,6 +51,7 @@ def main():
     # TODO need to remove the 1 passing into this function, it needs to be passed in dynamically
     recent_form(1, db_cursor)
     form_against_team(1, 2, db_cursor)
+    distance_travelled(1, 2, db_cursor)
 
     plepa_db.close()
 
@@ -107,6 +101,50 @@ def form_against_team(team_id_one, team_id_two, db_cursor):
         elif result == 0:
             form = form + 0.666
     print(form)
+
+
+# ==================================================================================================================== #
+
+
+def distance_travelled(team_id_one, team_id_two, db_cursor):
+    team_one_x = 0
+    team_one_y = 0
+    team_two_x = 0
+    team_two_y = 0
+    sql = f'SELECT x_coord, y_coord ' \
+          f'FROM plepa.stadium, plepa.team ' \
+          f'WHERE stadium_id_pk = stadium_id_fk ' \
+          f'AND team_id_pk = {team_id_one} '
+    db_cursor.execute(sql)
+    for team_one_x_sql, team_one_y_sql in db_cursor:
+        team_one_x = team_one_x_sql
+        team_one_y = team_one_y_sql
+    sql = f'SELECT x_coord, y_coord ' \
+          f'FROM plepa.stadium, plepa.team ' \
+          f'WHERE stadium_id_pk = stadium_id_fk ' \
+          f'AND team_id_pk = {team_id_two} '
+    db_cursor.execute(sql)
+    for team_two_x_sql, team_two_y_sql in db_cursor:
+        team_two_x = team_two_x_sql
+        team_two_y = team_two_y_sql
+    distance = calculate_distance(team_one_x, team_one_y, team_two_x, team_two_y)
+    print(distance)
+
+
+# ==================================================================================================================== #
+
+
+def calculate_distance(x_coord_one, y_coord_one, x_coord_two, y_coord_two):
+    r = 6372800  # Earth radius in meters
+
+    phi1, phi2 = math.radians(y_coord_one), math.radians(y_coord_two)
+    dphi = math.radians(y_coord_two - y_coord_one)
+    dlambda = math.radians(x_coord_two - x_coord_one)
+
+    a = math.sin(dphi / 2) ** 2 + \
+        math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
+
+    return round(2 * r * math.atan2(math.sqrt(a), math.sqrt(1 - a))/1000)
 
 
 # ==================================================================================================================== #
