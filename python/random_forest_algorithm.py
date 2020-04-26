@@ -28,8 +28,9 @@ Possible implementation:
 """
 # ====================================================== Imports ===================================================== #
 
-import mysql.connector
 import math
+
+import mysql.connector
 
 # ===================================================== Variables ==================================================== #
 
@@ -52,6 +53,8 @@ def main():
     recent_form(1, db_cursor)
     form_against_team(1, 2, db_cursor)
     distance_travelled(1, 2, db_cursor)
+    league_difference(1, 2, db_cursor)
+    current_league_difference(14, 19, db_cursor)
 
     plepa_db.close()
 
@@ -128,7 +131,69 @@ def distance_travelled(team_id_one, team_id_two, db_cursor):
         team_two_x = team_two_x_sql
         team_two_y = team_two_y_sql
     distance = calculate_distance(team_one_x, team_one_y, team_two_x, team_two_y)
+    # Max distance between clubs is ~ 600
+    distance = round(0.5 + (distance / 1200), 2)
+    if distance < 0:
+        distance = 0
     print(distance)
+
+
+# ==================================================================================================================== #
+
+
+def league_difference(team_id_one, team_id_two, db_cursor):
+    sql = f'SELECT position ' \
+          f'FROM plepa.season_overview ' \
+          f'WHERE team_id_pk_fk =  {team_id_one} ' \
+          f'AND season_pk = {CURRENT_SEASON} - 1 '
+    db_cursor.execute(sql)
+    # Set default to 20 because newly promoted teams have a previous league position of 20.
+    team_one_league_position = 20
+    team_two_league_position = 20
+    for last_league_position in db_cursor:
+        team_one_league_position = last_league_position[0]
+    sql = f'SELECT position ' \
+          f'FROM plepa.season_overview ' \
+          f'WHERE team_id_pk_fk =  {team_id_two} ' \
+          f'AND season_pk = {CURRENT_SEASON} - 1 '
+    db_cursor.execute(sql)
+    for last_league_position in db_cursor:
+        team_two_league_position = last_league_position[0]
+    league_diff = team_two_league_position - team_one_league_position
+    if league_diff > 0:
+        league_diff = round((league_diff / 19), 2)
+    else:
+        league_diff = round(1 + (league_diff / 19), 2)
+    print(league_diff)
+
+
+# ==================================================================================================================== #
+
+
+def current_league_difference(team_id_one, team_id_two, db_cursor):
+    sql = f'SELECT position ' \
+          f'FROM plepa.season_overview ' \
+          f'WHERE team_id_pk_fk =  {team_id_one} ' \
+          f'AND season_pk = {CURRENT_SEASON} '
+    db_cursor.execute(sql)
+    # Set default to 20 just in case unable to determine
+    team_one_league_position = 20
+    team_two_league_position = 20
+    for last_league_position in db_cursor:
+        team_one_league_position = last_league_position[0]
+    sql = f'SELECT position ' \
+          f'FROM plepa.season_overview ' \
+          f'WHERE team_id_pk_fk =  {team_id_two} ' \
+          f'AND season_pk = {CURRENT_SEASON} '
+    db_cursor.execute(sql)
+    for last_league_position in db_cursor:
+        team_two_league_position = last_league_position[0]
+    league_diff = team_two_league_position - team_one_league_position
+    if league_diff > 0:
+        league_diff = round((league_diff / 19), 2)
+    else:
+        league_diff = round(1 + (league_diff / 19), 2)
+    print(league_diff)
 
 
 # ==================================================================================================================== #
@@ -144,7 +209,7 @@ def calculate_distance(x_coord_one, y_coord_one, x_coord_two, y_coord_two):
     a = math.sin(dphi / 2) ** 2 + \
         math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
 
-    return round(2 * r * math.atan2(math.sqrt(a), math.sqrt(1 - a))/1000)
+    return 2 * r * math.atan2(math.sqrt(a), math.sqrt(1 - a)) / 1000
 
 
 # ==================================================================================================================== #
