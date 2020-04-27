@@ -29,6 +29,7 @@ Possible implementation:
 # ====================================================== Imports ===================================================== #
 
 import math
+import random
 
 import mysql.connector
 
@@ -47,24 +48,108 @@ def main():
         passwd='PLePApw',
         database='plepa'
     )
-    db_cursor = plepa_db.cursor()
+    db_cursor = plepa_db.cursor(buffered=True)
+
+    sql = f'SELECT * ' \
+          f'FROM plepa.thresholds '
+    db_cursor.execute(sql)
+
+    # Thresholds
+    # loss is always 0
+    loss = 0
+    win = 0
+    draw = 0
+    for thresholds in db_cursor:
+        win = thresholds[0]
+        draw = thresholds[1]
+
     team_one = 1
     team_two = 2
 
-    recent_form(team_one, team_two, db_cursor)
-    form_against_team(team_one, team_two, db_cursor)
-    distance_travelled(team_one, team_two, db_cursor)
-    league_difference(team_one, team_two, db_cursor)
-    current_league_difference(team_one, team_two, db_cursor)
-
+    sql = f'SELECT * ' \
+          f'FROM game ' \
+          f'WHERE season_pk = {CURRENT_SEASON}'
+    db_cursor.execute(sql)
+    games = []
+    game_counter = 0
+    correct_prediction_counter = 0
+    for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in db_cursor:
+        games.append([game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score])
+    for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in games:
+        game_counter = game_counter + 1
+        team_one = db_team_one
+        team_two = db_team_two
+        team_one_score = db_team_one_score
+        team_two_score = db_team_two_score
+        predicted_score = 0
+        function_dict = {}
+        for i in range(3):
+            function_chooser = random.randint(1, 5)
+            if function_chooser == 1:
+                recent_form_result = recent_form(team_one, team_two, db_cursor)
+                predicted_score = predicted_score + recent_form_result
+                function_dict[f"recent_form {i + 1}"] = recent_form_result
+            elif function_chooser == 2:
+                form_against_team_result = form_against_team(7, 13, db_cursor)
+                predicted_score = predicted_score + form_against_team_result
+                function_dict[f"form_against_team {i + 1}"] = form_against_team_result
+            elif function_chooser == 3:
+                distance_travelled_result = distance_travelled(team_one, team_two, db_cursor)
+                predicted_score = predicted_score + distance_travelled_result
+                function_dict[f"distance_travelled {i + 1}"] = distance_travelled_result
+            elif function_chooser == 4:
+                league_difference_result = league_difference(team_one, team_two, db_cursor)
+                predicted_score = predicted_score + league_difference_result
+                function_dict[f"league_difference {i + 1}"] = league_difference_result
+            elif function_chooser == 5:
+                current_league_difference_result = current_league_difference(team_one, team_two, db_cursor)
+                predicted_score = predicted_score + current_league_difference_result
+                function_dict[f"current_league_difference {i + 1}"] = current_league_difference_result
+        if team_one_score > team_two_score:
+            actual_result = 'WIN'
+        elif team_two_score < team_one_score:
+            actual_result = 'LOSE'
+        else:
+            actual_result = 'DRAW'
+        if predicted_score < draw:
+            predicted_result = 'LOSE'
+        elif predicted_score < win:
+            predicted_result = 'DRAW'
+        else:
+            predicted_result = 'WIN'
+        if actual_result == predicted_result:
+            correct_prediction_counter = correct_prediction_counter + 1
+        else:
+            sql = 'UPDATE thresholds '
+            second_sql = ''
+            if predicted_result == 'WIN' and actual_result == 'DRAW':
+                sql = sql + 'SET win = win + 0.001'
+            elif predicted_result == 'WIN' and actual_result == 'LOSE':
+                sql = sql + 'SET win = win + 0.002'
+            elif predicted_result == 'DRAW' and actual_result == 'WIN':
+                sql = sql + 'SET win = win - 0.001'
+            elif predicted_result == 'DRAW' and actual_result == 'LOSE':
+                sql = sql + 'SET draw = draw + 0.001'
+            elif predicted_result == 'LOSE' and actual_result == 'DRAW':
+                sql = sql + 'SET draw = draw - 0.001'
+            elif predicted_result == 'LOSE' and actual_result == 'WIN':
+                sql = sql + 'SET draw = draw - 0.0001'
+                second_sql = 'UPDATE thresholds ' \
+                             'SET win = win - 0.0001'
+            db_cursor.execute(sql)
+            plepa_db.commit()
+            if second_sql != '':
+                db_cursor.execute(second_sql)
+                plepa_db.commit()
+        print(actual_result, predicted_result)
+    print(correct_prediction_counter/game_counter)
     plepa_db.close()
 
 
 # ===================================================== Functions ==================================================== #
 
 
-def recent_form(team_id_one, team_id_two,  db_cursor):
-    # TODO Maybe this should compare the two teams forms
+def recent_form(team_id_one, team_id_two, db_cursor):
     sql = f'SELECT * ' \
           f'FROM plepa.game ' \
           f'WHERE home_team_id_pk_fk = {team_id_one}  OR away_team_id_pk_fk = {team_id_one} ' \
@@ -98,7 +183,7 @@ def recent_form(team_id_one, team_id_two,  db_cursor):
         elif result == 0:
             team_two_form = team_two_form + 0.1
     form = team_one_form - (team_two_form / 3)
-    print(form)
+    return form
 
 
 # ==================================================================================================================== #
@@ -121,8 +206,8 @@ def form_against_team(team_id_one, team_id_two, db_cursor):
         if result > 0:
             form = form + 0.2
         elif result == 0:
-            form = form + 0.666
-    print(form)
+            form = form + 0.066
+    return form
 
 
 # ==================================================================================================================== #
@@ -154,7 +239,7 @@ def distance_travelled(team_id_one, team_id_two, db_cursor):
     distance = round(0.5 + (distance / 1200), 2)
     if distance < 0:
         distance = 0
-    print(distance)
+    return distance
 
 
 # ==================================================================================================================== #
@@ -180,10 +265,10 @@ def league_difference(team_id_one, team_id_two, db_cursor):
         team_two_league_position = last_league_position[0]
     league_diff = team_two_league_position - team_one_league_position
     if league_diff > 0:
-        league_diff = round((league_diff / 19), 2)
+        league_diff = 0.5 + round((league_diff / 38), 2)
     else:
         league_diff = round(1 + (league_diff / 19), 2)
-    print(league_diff)
+    return league_diff
 
 
 # ==================================================================================================================== #
@@ -209,10 +294,10 @@ def current_league_difference(team_id_one, team_id_two, db_cursor):
         team_two_league_position = last_league_position[0]
     league_diff = team_two_league_position - team_one_league_position
     if league_diff > 0:
-        league_diff = round((league_diff / 19), 2)
+        league_diff = 0.5 + round((league_diff / 38), 2)
     else:
-        league_diff = round(1 + (league_diff / 19), 2)
-    print(league_diff)
+        league_diff = 0.5 + round(league_diff / 38, 2)
+    return league_diff
 
 
 # ==================================================================================================================== #

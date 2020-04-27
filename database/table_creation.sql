@@ -44,3 +44,27 @@ CREATE TABLE game (
     FOREIGN KEY (away_team_id_pk_fk)
 		REFERENCES team(team_id_pk)
 );
+
+CREATE TABLE thresholds 
+    (
+        win DECIMAL(5, 4),
+        draw DECIMAL(5, 4)
+    );
+    
+CREATE TABLE random_forest_results 
+    (
+        test_id INT AUTO_INCREMENT PRIMARY KEY,
+        team_one_id INT,
+        team_two_id INT,
+        function_one_name VARCHAR(255),
+        function_one_value DECIMAL(5, 4),
+        function_two_name VARCHAR(255),
+        function_two_value DECIMAL(5, 4),
+        function_three_name VARCHAR(255),
+        function_three_value DECIMAL(5, 4),
+        total_predicted_value DECIMAL(5, 4),
+        predicted_result VARCHAR(255),
+        actual_result VARCHAR(255),
+        correct BOOLEAN
+    );
+
