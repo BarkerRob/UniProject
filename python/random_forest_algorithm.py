@@ -1,9 +1,11 @@
 """
 Notes:
     Result criteria
-    0 - 1.2 is a loss
-    1.11 - 1.89 is a draw
-    1.9 - 3.0 is a win
+    Start with below values:
+        < 1.2 is a loss
+        < 1.8 is a draw
+        > 1.8 is a win
+
 
     Criteria to determine the result:
         Recent form, last 5 games
@@ -35,7 +37,7 @@ import mysql.connector
 
 # ===================================================== Variables ==================================================== #
 
-CURRENT_SEASON = 2019
+CURRENT_SEASON = 2016
 
 
 # ======================================================= Main ======================================================= #
@@ -62,9 +64,6 @@ def main():
     for thresholds in db_cursor:
         win = thresholds[0]
         draw = thresholds[1]
-
-    team_one = 1
-    team_two = 2
 
     sql = f'SELECT * ' \
           f'FROM game ' \
@@ -107,7 +106,7 @@ def main():
                 function_dict[f"current_league_difference {i + 1}"] = current_league_difference_result
         if team_one_score > team_two_score:
             actual_result = 'WIN'
-        elif team_two_score < team_one_score:
+        elif team_two_score > team_one_score:
             actual_result = 'LOSE'
         else:
             actual_result = 'DRAW'
@@ -117,8 +116,10 @@ def main():
             predicted_result = 'DRAW'
         else:
             predicted_result = 'WIN'
+        correct = 'FALSE'
         if actual_result == predicted_result:
             correct_prediction_counter = correct_prediction_counter + 1
+            correct = 'TRUE'
         else:
             sql = 'UPDATE thresholds '
             second_sql = ''
@@ -142,7 +143,20 @@ def main():
                 db_cursor.execute(second_sql)
                 plepa_db.commit()
         print(actual_result, predicted_result)
-    print(correct_prediction_counter/game_counter)
+        sql = f'INSERT INTO random_forest_results values (' \
+              f'test_id, ' \
+              f'{team_one}, ' \
+              f'{team_two}, '
+        for k, v in function_dict.items():
+            sql = f"{sql} '{k}', {v}, "
+        sql = f"{sql} " \
+              f"{predicted_score}, " \
+              f"'{predicted_result}', " \
+              f"'{actual_result}', " \
+              f"{correct})"
+        db_cursor.execute(sql)
+        plepa_db.commit()
+    print(correct_prediction_counter / game_counter)
     plepa_db.close()
 
 
@@ -157,6 +171,7 @@ def recent_form(team_id_one, team_id_two, db_cursor):
           f'LIMIT 5'
     db_cursor.execute(sql)
     team_one_form = 0
+    counter = 0
     for game_nr, home_team_id, away_team_id, season, home_team_score, away_team_score in db_cursor:
         if home_team_id == team_id_one:
             result = home_team_score - away_team_score
@@ -166,6 +181,9 @@ def recent_form(team_id_one, team_id_two, db_cursor):
             team_one_form = team_one_form + 0.2
         elif result == 0:
             team_one_form = team_one_form + 0.1
+        counter = counter + 1
+    if counter < 5:
+        team_one_form = team_one_form + ((5 - counter) * 0.1)
     sql = f'SELECT * ' \
           f'FROM plepa.game ' \
           f'WHERE home_team_id_pk_fk = {team_id_two}  OR away_team_id_pk_fk = {team_id_two} ' \
@@ -173,6 +191,7 @@ def recent_form(team_id_one, team_id_two, db_cursor):
           f'LIMIT 5'
     db_cursor.execute(sql)
     team_two_form = 0
+    counter = 0
     for game_nr, home_team_id, away_team_id, season, home_team_score, away_team_score in db_cursor:
         if home_team_id == team_id_two:
             result = home_team_score - away_team_score
@@ -182,6 +201,9 @@ def recent_form(team_id_one, team_id_two, db_cursor):
             team_two_form = team_two_form + 0.2
         elif result == 0:
             team_two_form = team_two_form + 0.1
+        counter = counter + 1
+    if counter < 5:
+        team_two_form = team_two_form + ((5 - counter) * 0.1)
     form = team_one_form - (team_two_form / 3)
     return form
 
@@ -198,6 +220,7 @@ def form_against_team(team_id_one, team_id_two, db_cursor):
           f'LIMIT 5'
     db_cursor.execute(sql)
     form = 0
+    counter = 0
     for game_nr, home_team_id, away_team_id, season, home_team_score, away_team_score in db_cursor:
         if home_team_id == team_id_one:
             result = home_team_score - away_team_score
@@ -207,6 +230,9 @@ def form_against_team(team_id_one, team_id_two, db_cursor):
             form = form + 0.2
         elif result == 0:
             form = form + 0.066
+        counter = counter + 1
+    if counter < 5:
+        form = form + ((5 - counter) * 0.1)
     return form
 
 
