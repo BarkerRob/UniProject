@@ -37,13 +37,11 @@ import mysql.connector
 
 # ===================================================== Variables ==================================================== #
 
-CURRENT_SEASON = 2016
-
 
 # ======================================================= Main ======================================================= #
 
 
-def main():
+def main(current_season):
     plepa_db = mysql.connector.connect(
         host='localhost',
         user='root',
@@ -67,7 +65,7 @@ def main():
 
     sql = f'SELECT * ' \
           f'FROM game ' \
-          f'WHERE season_pk = {CURRENT_SEASON}'
+          f'WHERE season_pk = {current_season}'
     db_cursor.execute(sql)
     games = []
     game_counter = 0
@@ -97,11 +95,11 @@ def main():
                 predicted_score = predicted_score + distance_travelled_result
                 function_dict[f"distance_travelled {i + 1}"] = distance_travelled_result
             elif function_chooser == 4:
-                league_difference_result = league_difference(team_one, team_two, db_cursor)
+                league_difference_result = league_difference(team_one, team_two, current_season, db_cursor)
                 predicted_score = predicted_score + league_difference_result
                 function_dict[f"league_difference {i + 1}"] = league_difference_result
             elif function_chooser == 5:
-                current_league_difference_result = current_league_difference(team_one, team_two, db_cursor)
+                current_league_difference_result = current_league_difference(team_one, team_two, current_season, db_cursor)
                 predicted_score = predicted_score + current_league_difference_result
                 function_dict[f"current_league_difference {i + 1}"] = current_league_difference_result
         if team_one_score > team_two_score:
@@ -142,7 +140,6 @@ def main():
             if second_sql != '':
                 db_cursor.execute(second_sql)
                 plepa_db.commit()
-        print(actual_result, predicted_result)
         sql = f'INSERT INTO random_forest_results values (' \
               f'test_id, ' \
               f'{team_one}, ' \
@@ -156,8 +153,16 @@ def main():
               f"{correct})"
         db_cursor.execute(sql)
         plepa_db.commit()
-    print(correct_prediction_counter / game_counter)
+    sql = f'SELECT * ' \
+          f'FROM thresholds '
+    db_cursor.execute(sql)
+    win_threshold = 0
+    draw_threshold = 0
+    for win, draw in db_cursor:
+        win_threshold = win
+        draw_threshold = draw
     plepa_db.close()
+    return (correct_prediction_counter / game_counter), win_threshold, draw_threshold
 
 
 # ===================================================== Functions ==================================================== #
@@ -271,11 +276,11 @@ def distance_travelled(team_id_one, team_id_two, db_cursor):
 # ==================================================================================================================== #
 
 
-def league_difference(team_id_one, team_id_two, db_cursor):
+def league_difference(team_id_one, team_id_two, current_season, db_cursor):
     sql = f'SELECT position ' \
           f'FROM plepa.season_overview ' \
           f'WHERE team_id_pk_fk =  {team_id_one} ' \
-          f'AND season_pk = {CURRENT_SEASON} - 1 '
+          f'AND season_pk = {current_season} - 1 '
     db_cursor.execute(sql)
     # Set default to 20 because newly promoted teams have a previous league position of 20.
     team_one_league_position = 20
@@ -285,7 +290,7 @@ def league_difference(team_id_one, team_id_two, db_cursor):
     sql = f'SELECT position ' \
           f'FROM plepa.season_overview ' \
           f'WHERE team_id_pk_fk =  {team_id_two} ' \
-          f'AND season_pk = {CURRENT_SEASON} - 1 '
+          f'AND season_pk = {current_season} - 1 '
     db_cursor.execute(sql)
     for last_league_position in db_cursor:
         team_two_league_position = last_league_position[0]
@@ -300,11 +305,11 @@ def league_difference(team_id_one, team_id_two, db_cursor):
 # ==================================================================================================================== #
 
 
-def current_league_difference(team_id_one, team_id_two, db_cursor):
+def current_league_difference(team_id_one, team_id_two, current_season, db_cursor):
     sql = f'SELECT position ' \
           f'FROM plepa.season_overview ' \
           f'WHERE team_id_pk_fk =  {team_id_one} ' \
-          f'AND season_pk = {CURRENT_SEASON} '
+          f'AND season_pk = {current_season} '
     db_cursor.execute(sql)
     # Set default to 20 just in case unable to determine
     team_one_league_position = 20
@@ -314,7 +319,7 @@ def current_league_difference(team_id_one, team_id_two, db_cursor):
     sql = f'SELECT position ' \
           f'FROM plepa.season_overview ' \
           f'WHERE team_id_pk_fk =  {team_id_two} ' \
-          f'AND season_pk = {CURRENT_SEASON} '
+          f'AND season_pk = {current_season} '
     db_cursor.execute(sql)
     for last_league_position in db_cursor:
         team_two_league_position = last_league_position[0]
@@ -346,4 +351,4 @@ def calculate_distance(x_coord_one, y_coord_one, x_coord_two, y_coord_two):
 
 
 if __name__ == '__main__':
-    main()
+    main(2019)
