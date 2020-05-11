@@ -30,10 +30,13 @@ Possible implementation:
 """
 # ====================================================== Imports ===================================================== #
 
+import csv
 import math
 import random
 
 import mysql.connector
+from python import random_forest_algorithm as rfa
+
 
 # ===================================================== Variables ==================================================== #
 
@@ -70,6 +73,10 @@ def main(current_season):
     games = []
     game_counter = 0
     correct_prediction_counter = 0
+    with open(f'../algorithm results/random_forest/random_forest_classification_2019.csv', 'w',
+              newline='') as csv_file:
+        algorithm_writer = csv.writer(csv_file, delimiter=',')
+        algorithm_writer.writerow(['team_one_score', 'team_two_score', 'actual_result', 'predicted_result'])
     for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in db_cursor:
         games.append([game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score])
     for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in games:
@@ -103,7 +110,8 @@ def main(current_season):
                     predicted_score = predicted_score + league_difference_result
                     function_dict[f"league_difference {i + 1}"] = league_difference_result
                 elif function_chooser == 5:
-                    current_league_difference_result = current_league_difference(team_one, team_two, current_season, db_cursor)
+                    current_league_difference_result = current_league_difference(team_one, team_two, current_season,
+                                                                                 db_cursor)
                     predicted_score = predicted_score + current_league_difference_result
                     function_dict[f"current_league_difference {i + 1}"] = current_league_difference_result
             if team_one_score > team_two_score:
@@ -165,6 +173,10 @@ def main(current_season):
             correct_prediction_counter = correct_prediction_counter + 1
         elif actual_result == 'DRAW' and total_draws > total_loses and total_draws > total_wins:
             correct_prediction_counter = correct_prediction_counter + 1
+        with open(f'../algorithm results/random_forest/random_forest_classification_2019.csv', 'a',
+                  newline='') as csv_file:
+            algorithm_writer = csv.writer(csv_file, delimiter=',')
+            algorithm_writer.writerow([team_one_score, team_two_score, actual_result, predicted_result])
 
     sql = f'SELECT * ' \
           f'FROM thresholds '
