@@ -68,3 +68,9 @@ CREATE TABLE random_forest_results
         correct BOOLEAN
     );
 
+CREATE TABLE knn_data
+    (
+        distance_travelled INT,
+        league_difference INT,
+        result VARCHAR(255)
+    );
