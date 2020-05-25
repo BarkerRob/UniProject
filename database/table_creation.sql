@@ -70,7 +70,7 @@ CREATE TABLE random_forest_results
 
 CREATE TABLE knn_data
     (
-        distance_travelled INT,
+        away_team_distance_travelled INT,
         league_difference INT,
         result VARCHAR(255)
     );

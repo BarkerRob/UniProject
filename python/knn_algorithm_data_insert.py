@@ -30,9 +30,7 @@ Possible implementation:
 """
 # ====================================================== Imports ===================================================== #
 
-import csv
 import math
-import random
 
 import mysql.connector
 
@@ -54,47 +52,32 @@ def main(current_season):
 
     sql = f'SELECT * ' \
           f'FROM game ' \
-          f'WHERE season_pk = {current_season}'
+          f'WHERE season_pk IN (2014, 2015, 2016, 2017, 2018)'
     db_cursor.execute(sql)
     games = []
-    game_counter = 0
-    correct_prediction_counter = 0
     for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in db_cursor:
         games.append([game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score])
     for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in games:
-        total_wins = 0
-        total_loses = 0
-        total_draws = 0
-        game_counter = game_counter + 1
-        for i in range(100):
-            team_one = db_team_one
-            team_two = db_team_two
-            team_one_score = db_team_one_score
-            team_two_score = db_team_two_score
-            predicted_score = 0
-            function_dict = {}
-            for i in range(3):
-                distance_travelled_result = distance_travelled(team_one, team_two, db_cursor)
-                predicted_score = predicted_score + distance_travelled_result
-                function_dict[f"distance_travelled {i + 1}"] = distance_travelled_result
-                current_league_difference_result = current_league_difference(team_one, team_two, current_season,
-                                                                             db_cursor)
-                predicted_score = predicted_score + current_league_difference_result
-                function_dict[f"current_league_difference {i + 1}"] = current_league_difference_result
-            if team_one_score > team_two_score:
-                actual_result = 'WIN'
-            elif team_two_score > team_one_score:
-                actual_result = 'LOSE'
-            else:
-                actual_result = 'DRAW'
-            sql = f'INSERT INTO random_forest_results values (' \
-                  f'test_id, ' \
-                  f'{team_one}, ' \
-                  f'{team_two}, '
-            db_cursor.execute(sql)
-            plepa_db.commit()
+        team_one = db_team_one
+        team_two = db_team_two
+        team_one_score = db_team_one_score
+        team_two_score = db_team_two_score
+        distance_travelled_result = distance_travelled(team_one, team_two, db_cursor)
+        current_league_difference_result = current_league_difference(team_one, team_two, current_season,
+                                                                     db_cursor)
+        if team_one_score > team_two_score:
+            actual_result = 'WIN'
+        elif team_two_score > team_one_score:
+            actual_result = 'LOSE'
+        else:
+            actual_result = 'DRAW'
+        sql = f"INSERT INTO knn_data values (" \
+              f"{distance_travelled_result}, " \
+              f"{current_league_difference_result}, " \
+              f"'{actual_result}') "
+        db_cursor.execute(sql)
+        plepa_db.commit()
     plepa_db.close()
-    return (correct_prediction_counter / game_counter), win_threshold, draw_threshold
 
 
 # ===================================================== Functions ==================================================== #
@@ -150,10 +133,6 @@ def current_league_difference(team_id_one, team_id_two, current_season, db_curso
     for last_league_position in db_cursor:
         team_two_league_position = last_league_position[0]
     league_diff = team_two_league_position - team_one_league_position
-    if league_diff > 0:
-        league_diff = 0.5 + round((league_diff / 38), 2)
-    else:
-        league_diff = 0.5 + round(league_diff / 38, 2)
     return league_diff
 
 
