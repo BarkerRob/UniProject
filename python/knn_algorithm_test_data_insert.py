@@ -24,7 +24,7 @@ def main():
 
     sql = f'SELECT * ' \
           f'FROM game ' \
-          f'WHERE season_pk IN (2014, 2015, 2016, 2017, 2018)'
+          f'WHERE season_pk IN (2019)'
     db_cursor.execute(sql)
     games = []
     for game_id, db_team_one, db_team_two, season, db_team_one_score, db_team_two_score in db_cursor:
@@ -43,7 +43,7 @@ def main():
             actual_result = 'LOSE'
         else:
             actual_result = 'DRAW'
-        sql = f"INSERT INTO knn_data values (" \
+        sql = f"INSERT INTO knn_test_data values (" \
               f"{distance_travelled_result}, " \
               f"{season_league_difference_result}, " \
               f"'{actual_result}') "

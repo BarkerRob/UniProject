@@ -74,3 +74,11 @@ CREATE TABLE knn_data
         league_difference INT,
         result VARCHAR(255)
     );
+
+CREATE TABLE knn_test_data
+    (
+        away_team_distance_travelled INT,
+        league_difference INT,
+        result VARCHAR(255)
+    );
+
