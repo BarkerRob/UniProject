@@ -36,7 +36,7 @@ def main():
     correct = 0
     for each_test in test_dataset:
         print(f'test_row: {each_test}')
-        actual, predicted = get_classification(training_dataset, each_test, 7)
+        actual, predicted = get_classification(training_dataset, each_test, 18)
         count = count + 1
         if actual == predicted:
             correct = correct + 1
