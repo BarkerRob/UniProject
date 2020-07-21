@@ -2,12 +2,14 @@
 """
 # ====================================================== Imports ===================================================== #
 
-from sklearn import svm
+import matplotlib.pyplot as plt
 import mysql.connector
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib import style
+from sklearn import svm
+
 style.use("ggplot")
+
 
 # ===================================================== Variables ==================================================== #
 
@@ -38,18 +40,37 @@ def main():
             result_plot.append(1)
         else:
             result_plot.append(0)
-    clf = svm.SVC(kernel='linear', C=1.0)
-    clf.fit(training_plot, result_plot)
-    w = clf.coef_[0]
-    print(w)
-    a = -w[0] / w[1]
-    xx = np.linspace(0, 12)
-    yy = a * xx - clf.intercept_[0] / w[1]
-    h0 = plt.plot(xx, yy, 'k-', label="non weighted div")
-    plt.scatter(training_plot[:, 0], training_plot[:, 1], c=result_plot)
-    plt.legend()
-    plt.show()
+    fignum = 1
+    for kernel in ('linear', 'rbf'):
+        clf = svm.SVC(kernel=kernel, gamma=2)
+        clf.fit(training_plot, result_plot)
+        plt.figure(fignum)
+        plt.clf()
+        plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=80, facecolors='none', zorder=10,
+                    edgecolors='k')
+        plt.scatter(training_plot[:, 0], training_plot[:, 1], c=result_plot, zorder=10, cmap=plt.cm.Paired, edgecolors='k')
+        plt.axis('tight')
+        x_min = 0
+        x_max = 500
+        y_min = -20
+        y_max = 20
+        XX, YY = np.mgrid[x_min:x_max:200j, y_min:y_max:200j]
+        Z = clf.decision_function(np.c_[XX.ravel(), YY.ravel()])
 
+        # Put the result into a color plot
+        Z = Z.reshape(XX.shape)
+        plt.figure(fignum, figsize=(4, 3))
+        plt.pcolormesh(XX, YY, Z > 0, cmap=plt.cm.Paired)
+        plt.contour(XX, YY, Z, colors=['k', 'k', 'k'], linestyles=['--', '-', '--'],
+                    levels=[-.5, 0, .5])
+
+        plt.xlim(x_min, x_max)
+        plt.ylim(y_min, y_max)
+
+        plt.xticks(())
+        plt.yticks(())
+        fignum = fignum + 1
+    plt.show()
     test_dataset = []
     sql = f'SELECT * ' \
           f'FROM svm_test_data '
@@ -63,7 +84,6 @@ def main():
 
 """def new_function(arg1, arg2):
     return 0"""
-
 
 # ==================================================================================================================== #
 
