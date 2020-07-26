@@ -35,7 +35,6 @@ import math
 import random
 
 import mysql.connector
-from python import random_forest_algorithm as rfa
 
 
 # ===================================================== Variables ==================================================== #
