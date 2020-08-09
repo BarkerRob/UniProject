@@ -82,3 +82,16 @@ CREATE TABLE knn_test_data
         result VARCHAR(255)
     );
 
+CREATE TABLE nv_data
+    (
+        away_team_distance_travelled INT,
+        form_against_team INT,
+        result VARCHAR(255)
+    );
+
+CREATE TABLE nv_test_data
+    (
+        away_team_distance_travelled INT,
+        form_against_team INT,
+        result VARCHAR(255)
+    );
