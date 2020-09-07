@@ -85,8 +85,6 @@ def main():
               newline='') as csv_file:
         algorithm_writer = csv.writer(csv_file, delimiter=',')
         algorithm_writer.writerow(['prediction', 'actual_result'])
-        for away_team_distance_travelled, league_difference, result in db_cursor:
-            test_dataset.append([int(away_team_distance_travelled), int(league_difference), result])
         win_counter = 0
         draw_lose_counter = 0
         for each_data in test_dataset:
